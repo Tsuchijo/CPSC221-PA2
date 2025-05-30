@@ -13,7 +13,7 @@
 template <class T>
 Stack<T>::Stack()
 {
-	T* items[DEFAULTCAPACITY];
+	items = new T[DEFAULTCAPACITY];
 	num_items = 0;
 	max_items = DEFAULTCAPACITY;
 }
@@ -24,7 +24,7 @@ Stack<T>::Stack()
 template <class T>
 Stack<T>::~Stack()
 {
-	delete items;
+	delete[] items;
 }
 
 /**
@@ -58,11 +58,11 @@ void Stack<T>::Push(const T& item) {
  */
 template <class T>
 T Stack<T>::Pop() {
-	T item = items[num_items-1];
-	if((num_items - 1) < (max_items / SHRINKRATE)){
+	num_items--;
+	T item = items[num_items];
+	if((num_items) < (max_items / SHRINKRATE)){
 		Resize(num_items);
 	}
-	num_items--;
 	return item;
 }
 
@@ -98,7 +98,7 @@ T Stack<T>::Remove()
  */
 template <class T>
 T Stack<T>::Peek() {  
-	return items[num_items]; 
+	return items[num_items-1]; 
 }
 
 /**
@@ -142,9 +142,11 @@ size_t Stack<T>::Size() const {
  */
 template <class T>
 void Stack<T>::Resize(size_t n) {
-	T new_items[n];
+	T* new_items = new T[n];
 	for(int i = 0; i < int(num_items); i++){
 		new_items[i] = items[i];
 	}
+	delete[] items;
 	items = new_items;
+	max_items = n;
 }

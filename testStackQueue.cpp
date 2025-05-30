@@ -29,7 +29,7 @@ TEST_CASE("Stack::basic functions", "[weight=1][part=stack]") {
     cout << intStack.Peek() << endl;
     while (!intStack.IsEmpty()) {
         result.push_back(intStack.Pop());
-        cout << intStack.Pop() << " ";
+        //cout << intStack.Pop() << " ";
     }
     REQUIRE(result == expected);
 }
