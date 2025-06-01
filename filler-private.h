@@ -10,3 +10,4 @@
  */
 
  // begin your declarations below
+bool IsFill(int x, int y, FillerConfig& config);

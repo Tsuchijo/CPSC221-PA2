@@ -5,6 +5,7 @@
  *              SUBMIT THIS FILE WITH YOUR MODIFICATIONS
  */
 
+#include <map>
 /**
  * Performs a flood fill using breadth first search.
  *
@@ -15,7 +16,7 @@ animation filler::FillBFS(FillerConfig& config) {
 	// complete your implementation below
 	// You should replace the following line with a
 	// correct call to fill.
-	return animation(); // REPLACE THIS STUB
+	return Fill<Queue>(config);
 }
 
 /**
@@ -28,7 +29,7 @@ animation filler::FillDFS(FillerConfig& config) {
 	// complete your implementation below
 	// You should replace the following line with a
 	// correct call to fill.
-	return animation(); // REPLACE THIS STUB
+	return Fill<Stack>(config);
 }
 
 /**
@@ -100,12 +101,49 @@ template <template <class T> class OrderingStructure> animation filler::Fill(Fil
 	int framecount = 0; // increment after processing one pixel; used for producing animation frames (step 3 above)
 	animation anim;
 	OrderingStructure<pair<unsigned int, unsigned int>> os;
-
-	// complete your implementation below
-	// HINT: you will likely want to declare some kind of structure to track
-	//       which pixels have already been visited
-  
+	std::map<pair<unsigned int, unsigned int>, bool> visited;
+	os.Add(config.seedpoint);
 	
+	while(!os.IsEmpty()){
+		pair<unsigned int, unsigned int> point = os.Remove();
+		auto lookup = visited.find(point);
+		if(lookup == visited.end()){
+			continue;
+		}
+		int x = point.first;
+		int y = point.second;
+		bool isInFill = IsFill(x,y, config);
+		visited[point] = isInFill;
+		if(isInFill){
+			config.picker->operator()(point);
+			if(framecount % config.frameFreq == 0){
+				anim.addFrame(config.img);
+			}
+		 	pair<unsigned int, unsigned int> north = pair<unsigned int, unsigned int>(x + 1, y);
+			pair<unsigned int, unsigned int> south = pair<unsigned int, unsigned int>(x - 1, y);
+		 	pair<unsigned int, unsigned int> west = pair<unsigned int, unsigned int>(x, y-1);
+		 	pair<unsigned int, unsigned int> east = pair<unsigned int, unsigned int>(x, y+1);
+
+			os.Add(north);
+			os.Add(south);
+			os.Add(east);
+			os.Add(west);
+			++framecount;
+		}
+	}
 
 	return anim;
+}
+
+bool filler::IsFill(int x, int y, FillerConfig& config){
+    int imageWidth = config.img.width();
+    int imageHeight = config.img.height();
+    if(x < 0 || x >= imageWidth || y < 0 || y >= imageHeight){
+        return false;
+    }
+    RGBAPixel* imgcolour = config.img.getPixel(x, y);
+    bool redInTol = abs(imgcolour->r - config.seedcolour.r) < config.tolerance;
+    bool greenInTol = abs(imgcolour->g - config.seedcolour.g) < config.tolerance;
+    bool blueInTol = abs(imgcolour->b - config.seedcolour.b) < config.tolerance;
+    return redInTol && greenInTol && blueInTol;
 }
