@@ -39,7 +39,7 @@ RGBAPixel StripeColourPicker::operator()(pair<unsigned int, unsigned int> p)
 {
     unsigned int x = p.first;
     unsigned int y = p.second;
-    bool is_stripe = ((x + y) % (2 * stripewidth)) <= stripewidth;
+    bool is_stripe = ((x + y) % (2 * stripewidth)) < stripewidth;
     if(is_stripe){
         return colour1;
     }

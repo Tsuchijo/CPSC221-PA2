@@ -132,7 +132,7 @@ template <template <class T> class OrderingStructure> animation filler::Fill(Fil
 			++framecount;
 		}
 	}
-
+	anim.addFrame(config.img);
 	return anim;
 }
 

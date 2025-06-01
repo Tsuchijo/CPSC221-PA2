@@ -61,7 +61,12 @@ T Stack<T>::Pop() {
 	num_items--;
 	T item = items[num_items];
 	if((num_items) < (max_items / SHRINKRATE)){
-		Resize(max_items / EXPANSIONFACTOR);
+		if(max_items / EXPANSIONFACTOR < DEFAULTCAPACITY){
+			Resize(DEFAULTCAPACITY);
+		}
+		else{
+			Resize(max_items / EXPANSIONFACTOR);
+		}
 	}
 	return item;
 }

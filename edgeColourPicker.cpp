@@ -40,7 +40,7 @@ RGBAPixel EdgeColourPicker::operator()(pair<unsigned int, unsigned int> p)
 {
     for(int i = -edgewidth; i <= int(edgewidth); i++){
         for(int j = -edgewidth; j <= int(edgewidth); j++){
-            if(i^2 + j^2 > edgewidth){
+            if((i*i + j*j) > (edgewidth*edgewidth)){
                 continue;
             }
             int x = p.first + i;
@@ -50,7 +50,7 @@ RGBAPixel EdgeColourPicker::operator()(pair<unsigned int, unsigned int> p)
             }
         }
     }
-    return seedcolour;
+    return *img.getPixel(p.first, p.second);
 }
 
 bool EdgeColourPicker::IsFill(int x, int y){
