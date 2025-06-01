@@ -60,10 +60,7 @@ bool EdgeColourPicker::IsFill(int x, int y){
         return false;
     }
     RGBAPixel* imgcolour = img.getPixel(x, y);
-    bool redInTol = abs(imgcolour->r - seedcolour.r) < tolerance;
-    bool greenInTol = abs(imgcolour->g - seedcolour.g) < tolerance;
-    bool blueInTol = abs(imgcolour->b - seedcolour.b) < tolerance;
-    return redInTol && greenInTol && blueInTol;
+    return imgcolour->distanceTo(seedcolour) <= tolerance;
 }
 
 /**

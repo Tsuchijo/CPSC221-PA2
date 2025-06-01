@@ -97,9 +97,9 @@ template <template <class T> class OrderingStructure> animation filler::Fill(Fil
 	 *        it will be the one we test against.
 	 *
 	 */
-
 	int framecount = 0; // increment after processing one pixel; used for producing animation frames (step 3 above)
 	animation anim;
+	ColourPicker& picker = *config.picker;
 	OrderingStructure<pair<unsigned int, unsigned int>> os;
 	std::map<pair<unsigned int, unsigned int>, bool> visited;
 	os.Add(config.seedpoint);
@@ -107,7 +107,7 @@ template <template <class T> class OrderingStructure> animation filler::Fill(Fil
 	while(!os.IsEmpty()){
 		pair<unsigned int, unsigned int> point = os.Remove();
 		auto lookup = visited.find(point);
-		if(lookup == visited.end()){
+		if(lookup != visited.end()){
 			continue;
 		}
 		int x = point.first;
@@ -115,15 +115,16 @@ template <template <class T> class OrderingStructure> animation filler::Fill(Fil
 		bool isInFill = IsFill(x,y, config);
 		visited[point] = isInFill;
 		if(isInFill){
-			config.picker->operator()(point);
-			if(framecount % config.frameFreq == 0){
+			RGBAPixel* pixel = config.img.getPixel(x, y);
+			*pixel = picker(point);
+			if(framecount % config.frameFreq == 0)
+			{
 				anim.addFrame(config.img);
 			}
-		 	pair<unsigned int, unsigned int> north = pair<unsigned int, unsigned int>(x + 1, y);
-			pair<unsigned int, unsigned int> south = pair<unsigned int, unsigned int>(x - 1, y);
-		 	pair<unsigned int, unsigned int> west = pair<unsigned int, unsigned int>(x, y-1);
-		 	pair<unsigned int, unsigned int> east = pair<unsigned int, unsigned int>(x, y+1);
-
+			pair<unsigned int, unsigned int> north = pair<unsigned int, unsigned int>(x, y - 1);
+			pair<unsigned int, unsigned int> south = pair<unsigned int, unsigned int>(x, y + 1);
+			pair<unsigned int, unsigned int> west = pair<unsigned int, unsigned int>(x - 1, y);
+			pair<unsigned int, unsigned int> east = pair<unsigned int, unsigned int>(x + 1, y);
 			os.Add(north);
 			os.Add(south);
 			os.Add(east);
@@ -142,8 +143,5 @@ bool filler::IsFill(int x, int y, FillerConfig& config){
         return false;
     }
     RGBAPixel* imgcolour = config.img.getPixel(x, y);
-    bool redInTol = abs(imgcolour->r - config.seedcolour.r) < config.tolerance;
-    bool greenInTol = abs(imgcolour->g - config.seedcolour.g) < config.tolerance;
-    bool blueInTol = abs(imgcolour->b - config.seedcolour.b) < config.tolerance;
-    return redInTol && greenInTol && blueInTol;
+    return config.seedcolour.distanceTo(*imgcolour) <= config.tolerance;
 }
