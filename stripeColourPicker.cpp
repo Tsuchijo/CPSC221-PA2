@@ -18,7 +18,9 @@
 StripeColourPicker::StripeColourPicker(unsigned int stripe_width, RGBAPixel stripe_colour1, RGBAPixel stripe_colour2)
 {
     // Complete your implementation below
-	
+	colour1 = stripe_colour1;
+    colour2 = stripe_colour2;
+    stripewidth = stripe_width;
 }
 
 /**
@@ -35,8 +37,15 @@ StripeColourPicker::StripeColourPicker(unsigned int stripe_width, RGBAPixel stri
  */
 RGBAPixel StripeColourPicker::operator()(pair<unsigned int, unsigned int> p)
 {
-    // Replace the line below with your implementation
-    return RGBAPixel();
+    unsigned int x = p.first;
+    unsigned int y = p.second;
+    bool is_stripe = ((x + y) % (2 * stripewidth)) <= stripewidth;
+    if(is_stripe){
+        return colour1;
+    }
+    else{
+        return colour2;
+    }
 }
 
 /**

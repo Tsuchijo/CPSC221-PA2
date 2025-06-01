@@ -13,8 +13,7 @@
   */
 PhotoNegativeColourPicker::PhotoNegativeColourPicker(PNG& orig)
 {
-    // Complete your implementation below
-
+    original = orig;
 }
 
 /**
@@ -28,8 +27,11 @@ PhotoNegativeColourPicker::PhotoNegativeColourPicker(PNG& orig)
  */
 RGBAPixel PhotoNegativeColourPicker::operator()(pair<unsigned int, unsigned int> p)
 {
-    // Replace the line below with your implementation
-    return RGBAPixel();
+    RGBAPixel *pixel = original.getPixel(p.first, p.second);
+    unsigned int negative_r = 255 - pixel->r;
+    unsigned int negative_g = 255 - pixel->g;
+    unsigned int negative_b = 255 - pixel->b;
+    return RGBAPixel(negative_r, negative_g, negative_b);
 }
 
 /**

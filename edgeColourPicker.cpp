@@ -19,7 +19,11 @@
  */
 EdgeColourPicker::EdgeColourPicker(unsigned int width, PNG& inputimage, RGBAPixel scolour, RGBAPixel ecolour, double tol)
 {
-    // Complete your implementation below
+    edgewidth = width;
+    img = inputimage;
+    seedcolour = scolour;
+    edgecolour = ecolour;
+    tolerance = tol;
 	
 }
 
@@ -34,8 +38,32 @@ EdgeColourPicker::EdgeColourPicker(unsigned int width, PNG& inputimage, RGBAPixe
  */
 RGBAPixel EdgeColourPicker::operator()(pair<unsigned int, unsigned int> p)
 {
-    // Replace the line below with your implementation
-    return RGBAPixel();
+    for(int i = -edgewidth; i <= int(edgewidth); i++){
+        for(int j = -edgewidth; j <= int(edgewidth); j++){
+            if(i^2 + j^2 > edgewidth){
+                continue;
+            }
+            int x = p.first + i;
+            int y = p.second + j;
+            if(!IsFill(x, y)){
+                return edgecolour;
+            }
+        }
+    }
+    return seedcolour;
+}
+
+bool EdgeColourPicker::IsFill(int x, int y){
+    int imageWidth = img.width();
+    int imageHeight = img.height();
+    if(x < 0 || x >= imageWidth || y < 0 || y >= imageHeight){
+        return false;
+    }
+    RGBAPixel* imgcolour = img.getPixel(x, y);
+    bool redInTol = abs(imgcolour->r - seedcolour.r) < tolerance;
+    bool greenInTol = abs(imgcolour->g - seedcolour.g) < tolerance;
+    bool blueInTol = abs(imgcolour->b - seedcolour.b) < tolerance;
+    return redInTol && greenInTol && blueInTol;
 }
 
 /**
